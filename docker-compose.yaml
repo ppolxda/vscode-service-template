@@ -1,0 +1,57 @@
+x-vscode-common: &vscode-common
+  environment: &vscode-common-env
+    PUID: 1000
+    PGID: 1000
+    TZ: Asia/Shanghai
+
+services:
+  # 主要用于HTTPS配置，如果不配置无法使用部分系统权限，例如剪切板和麦克风
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    environment:
+      <<: *vscode-common-env
+    volumes:
+      - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/certs:/etc/nginx/ssl
+      # - ./logs/nginx:/var/log/nginx
+      # - ./html:/usr/share/nginx/html
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    depends_on:
+      - code-server
+
+  # 核心Vscode服务
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    # optional build dev env
+    # you need change image name when you build your own image
+    # image: python_dev
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    container_name: code-server
+    privileged: false # 如果需要使用usb接口之类，开启特权模式
+    environment:
+      <<: *vscode-common-env
+      PASSWORD: jzd123456 #optional  登录明文密码
+      HASHED_PASSWORD: #optional  登录哈希密码
+      SUDO_PASSWORD: jzd123456 #optional  Root明文密码
+      SUDO_PASSWORD_HASH: #optional  Root哈希密码
+      PROXY_DOMAIN: ${PROXY_DOMAIN:-code-server.my.domain}
+      DEFAULT_WORKSPACE: /config/workspace #optional
+    volumes:
+      - ./workspace:/config/workspace
+    # ports:
+    #   - 8443:8443
+    restart: unless-stopped
+    # 需要显卡解除下面配置
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 2
+    #           capabilities: [ gpu ]
