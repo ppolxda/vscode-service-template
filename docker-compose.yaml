@@ -43,7 +43,7 @@ services:
       PROXY_DOMAIN: ${PROXY_DOMAIN:-code-server.my.domain}
       DEFAULT_WORKSPACE: /config/workspace #optional
     volumes:
-      - ./workspace:/config/workspace
+      - ./workspace:/config
     # ports:
     #   - 8443:8443
     restart: unless-stopped
