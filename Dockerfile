@@ -1,8 +1,8 @@
 # 使用linuxserver/code-server作为基础镜像
 FROM lscr.io/linuxserver/code-server:latest
 
-ENV http_proxy=http://192.168.10.3:7890
-ENV https_proxy=http://192.168.10.3:7890
+# ENV http_proxy=http://192.168.10.3:7890
+# ENV https_proxy=http://192.168.10.3:7890
 
 # 安装Node.js / Python / Seafile CLI
 RUN apt  update && \
